@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarryGO - Production-Ready Mobility Ecosystem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-main: #0B0B0F; --bg-card: #12121A; --bg-card-hover: #1A1A24; --primary: #F3BA2F; --primary-hover: #E2AA22; --text-main: #FFFFFF; --text-muted: #A0A0AB; --success: #2ECC71; --border: rgba(255, 255, 255, 0.08); --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
+        body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+        .navbar { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: rgba(11, 11, 15, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; display: flex; align-items: center; gap: 5px; }
+        .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { font-size: 0.95rem; font-weight: 500; color: var(--text-muted); transition: color 0.2s ease; cursor: pointer; }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+        .nav-btn { background: var(--primary); color: #000000; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: background 0.2s ease; cursor: pointer; }
+        .nav-btn:hover { background: var(--primary-hover); }
+        .view-page { display: none; padding-top: 100px; min-height: 100vh; animation: fadeIn 0.3s ease-in-out forwards; }
+        .view-page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 5%; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 40px; margin-top: 30px; align-items: center; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 50px auto; }
+        .section-header h2 { font-size: 2.2rem; margin-bottom: 15px; }
+        .section-header p { color: var(--text-muted); }
+        
+        /* HOME STYLING */
+        .hero { text-align: center; padding: 60px 0 80px 0; background: radial-gradient(circle at top, rgba(243,186,47,0.08) 0%, transparent 60%); }
+        .badge-verified { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 25px; color: var(--text-muted); }
+        .badge-verified i { color: #3498DB; }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 20px; }
+        .hero p.lead { font-size: 1.25rem; color: var(--text-muted); max-width: 800px; margin: 0 auto 40px auto; }
+        .stack-row { display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; padding: 30px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 80px; }
+        .stack-item { font-size: 1.1rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+        .stack-item i { font-size: 1.4rem; color: #fff; }
+        .feature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: all 0.2s ease; }
+        .feature-card:hover { transform: translateY(-5px); background: var(--bg-card-hover); border-color: rgba(243,186,47,0.2); }
+        .feature-icon { width: 50px; height: 50px; background: rgba(243,186,47,0.1); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; }
+        .feature-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .feature-card p { color: var(--text-muted); font-size: 0.95rem; }
+        
+        /* DRIVER ENGINE STYLING */
+        .driver-showcase { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .phone-mockup { background: #000000; border: 12px solid #222; border-radius: 40px; max-width: 340px; margin: 0 auto; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); }
+        .phone-screen { background: #0B0B0F; height: 600px; display: flex; flex-direction: column; position: relative; }
+        .phone-header { background: var(--bg-card); padding: 20px 15px 15px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .driver-profile { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 36px; height: 36px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; }
+        .online-toggle { width: 44px; height: 24px; background: var(--primary); border-radius: 20px; position: relative; cursor: pointer; }
+        .online-toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 3px; right: 3px; }
+        .map-area { flex: 1; background: #1e1e24; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .map-bg { position: absolute; width: 100%; height: 100%; opacity: 0.3; background-image: radial-gradient(circle, var(--text-muted) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px; }
+        .stats-floating-box { position: absolute; bottom: 15px; left: 15px; right: 15px; background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; }
+        .stat-box h4 { font-size: 1.1rem; color: #fff; }
+        .stat-box span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+        
+        /* ADMIN TERMINAL STYLING */
+        .admin-layout { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; display: grid; grid-template-columns: 240px 1fr; min-height: 540px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden; }
+        .admin-sidebar { background: #09090D; border-right: 1px solid var(--border); padding: 20px; }
+        .sidebar-menu { list-style: none; margin-top: 30px; }
+        .sidebar-menu li { padding: 12px 15px; color: var(--text-muted); border-radius: 8px; margin-bottom: 5px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+        .sidebar-menu li.active, .sidebar-menu li:hover { background: rgba(243,186,47,0.1); color: var(--primary); }
+        .admin-main { padding: 30px; overflow-x: auto; }
+        .admin-metrics { display: flex; flex-direction: row; gap: 20px; margin-bottom: 30px; width: 100%; flex-wrap: nowrap; }
+        .metric-card { flex: 1; min-width: 160px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+        .metric-card span { font-size: 0.75rem; color: var(--text-muted); line-height: 1.2; margin-bottom: 6px; display: block; }
+        .metric-card h3 { font-size: 1.4rem; font-weight: 700; white-space: nowrap; }
+        .revenue-graph-mock { background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px; height: 240px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+        
+        /* GENERAL ADDED SECTIONS */
+        .alt-section { background-color: #0E0E14; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 80px 0; }
+        .step-card { display: flex; gap: 20px; margin-bottom: 25px; align-items: flex-start; }
+        .step-num { width: 35px; height: 35px; background: rgba(243,186,47,0.1); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .code-snippet { background: #050508; border: 1px solid var(--border); border-radius: 10px; padding: 25px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; color: #E2E2E9; overflow-x: auto; max-width: 100%; }
+        .code-keyword { color: #F3BA2F; }
+        .code-string { color: #2ECC71; }
+        .pricing-tier { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 40px 30px; text-align: center; position: relative; }
+        .pricing-tier.featured { border-color: var(--primary); box-shadow: 0 10px 30px rgba(243,186,47,0.1); }
+        .pricing-tier h4 { font-size: 1.5rem; margin-bottom: 10px; }
+        .pricing-price { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 20px 0; }
+        .pricing-features { list-style: none; text-align: left; margin: 30px 0; display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem; color: var(--text-muted); }
+        .pricing-features i { color: var(--success); margin-right: 10px; }
+        footer { border-top: 1px solid var(--border); padding: 40px 5%; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+        
+        @media(max-width: 992px) { .admin-metrics { flex-wrap: wrap; } .metric-card { min-width: calc(50% - 10px); } .grid-2 { grid-template-columns: 1fr; } }
+        @media(max-width: 768px) { .nav-links { display: none; } .hero h1 { font-size: 2.3rem; } .driver-showcase { grid-template-columns: 1fr; } .admin-layout { grid-template-columns: 1fr; } .admin-sidebar { display: none; } .metric-card { min-width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Carry<span>GO</span></div>
+        <ul class="nav-links">
+            <li><a onclick="switchView('home')" id="link-home" class="active">Ecosystem Overview</a></li>
+            <li><a onclick="switchView('driver')" id="link-driver">Driver Engine</a></li>
+            <li><a onclick="switchView('admin')" id="link-admin">Admin Terminal</a></li>
+        </ul>
+        <button class="nav-btn" onclick="switchView('admin')">Launch Terminal</button>
+    </nav>
+
+    <!-- ================= PAGE 1: HOME ECOSYSTEM ================= -->
+    <div id="page-home" class="view-page active">
+        <!-- Section 1: Hero -->
+        <section class="container hero">
+            <div class="badge-verified"><i class="fa-solid fa-circle-check"></i> Production-Ready 3-in-1 Ecosystem</div>
+            <h1>Your Ride. Your Way.</h1>
+            <p class="lead">Launch a premium white-label ride-hailing and delivery platform overnight. Complete source code stacks engineered with sub-second dispatch routines, native cross-platform mobility applications, and responsive monitoring workspaces.</p>
+            <div class="stack-row">
+                <div class="stack-item"><i class="fa-brands fa-react"></i> React Native (Expo)</div>
+                <div class="stack-item"><i class="fa-brands fa-node-js"></i> Node.js API</div>
+                <div class="stack-item"><i class="fa-solid fa-bolt"></i> Socket.IO Realtime</div>
+                <div class="stack-item"><i class="fa-solid fa-database"></i> MongoDB & Redis</div>
+            </div>
+        </section>
+
+        <!-- Section 2: Core Components Architecture -->
+        <section class="alt-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Platform Architecture Framework</h2>
+                    <p>Designed to scale dynamically using microservice architectures for reliable routing pipelines and instantaneous request mapping queues.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <h3>Customer Mobile Native</h3>
+                        <p>Fluid pickup boundaries, vector navigation path visuals, dynamic fare computing options, and internal digital top-up ledgers built in clean code layers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-id-card"></i></div>
+                        <h3>Driver Operations Engine</h3>
+                        <p>High-frequency location update protocols via continuous WebSockets, performance analytics timelines, structural shift logging logs, and documentation verification forms.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <h3>Central Control Workspace</h3>
+                        <p>High-level dashboard parameters to control custom commission multipliers per city territory, broadcast global messages, and coordinate quick payment disbursements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Revenue Architecture Flow -->
+        <section class="container">
+            <div class="section-header">
+                <h2>Automated Revenue & Commission Flow</h2>
+                <p>Transparent ledger adjustments handled automatically during trip life-cycles with isolated balance safeguards.</p>
+            </div>
+            <div class="grid-3" style="margin-top: 20px;">
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;">01</div>
+                    <h4>Customer Transacts</h4>
+                    <p>Passenger covers the calibrated fare value securely via internal wallet cards, Stripe integrations, or designated region gateways.</p>
+                </div>
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;">02</div>
+                    <h4>Operator Fee Cut</h4>
+                    <p>The platform architecture strips away configured commissions (e.g. 20% platform settings cut) instantly inside the central ledger.</p>
+                </div>
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;">03</div>
+                    <h4>Driver Balanced Credited</h4>
+                    <p>The operational balance adjusts smoothly, prompting push notification alerts to the driver app displaying the verified earning data.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Enterprise Code Overview -->
+        <section class="alt-section">
+            <div class="container">
+                <div class="grid-2">
+                    <div>
+                        <h2 style="font-size: 2.2rem; margin-bottom: 20px;">Production-Ready Infrastructure Deployment</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Deploy containerized stack topologies inside lightweight Docker files instantly onto live nodes without dependencies conflicts.</p>
+                        <div class="step-card">
+                            <div class="step-num">1</div>
+                            <div>
+                                <h5>Clone & Navigate Workspace</h5>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Acquire project repositories and locate internal directory structures.</p>
+                            </div>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">2</div>
+                            <div>
+                                <h5>Configure Environment Keys</h5>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Fill designated secure credentials variables mapping databases and map keys.</p>
+                            </div>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-num">3</div>
+                            <div>
+                                <h5>Single Command Bootup</h5>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Run native docker commands to spin all microservices concurrently.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="code-snippet">
+                            <span class="code-keyword">git clone</span> https://github.com/carrygo/stack.git<br>
+                            <span class="code-keyword">cd</span> carrygo<br><br>
+                            <span class="code-keyword">cp</span> backend/.env.example backend/.env<br>
+                            <span class="code-keyword">nano</span> backend/.env <span class="code-string"># Add your API configs</span><br><br>
+                            <span class="code-keyword">docker-compose up</span> -d --build<br><br>
+                            <span style="color: #85858F;">// Live API: http://localhost:5001<br>// Live Admin: http://localhost:3000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= PAGE 2: DRIVER ENGINE ================= -->
+    <div id="page-driver" class="view-page">
+        <!-- Section 1: Interactive Screen Mockup Showcase -->
+        <section class="container">
+            <div class="driver-showcase">
+                <div>
+                    <div class="badge-verified" style="color: var(--primary); background: rgba(243,186,47,0.05);"><i class="fa-solid fa-circle-nodes"></i> Active Interface Matrix</div>
+                    <h2 style="font-size: 2.5rem; margin-bottom: 20px; font-weight: 700;">Engineered for Realtime Field Operators</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">The workspace streams accurate coordinate positions into aggregation matrices, ensuring local proximity dispatch searches settle efficiently.</p>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display:flex; gap:15px; align-items:center;"><i class="fa-solid fa-wallet" style="color:var(--primary);"></i><span>Atomic database adjustments safeguard wallet profiles against dropping underneath validation baselines.</span></div>
+                        <div style="display:flex; gap:15px; align-items:center;"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i><span>Deep authentication tokens verify structural status metrics seamlessly.</span></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="phone-header">
+                                <div class="driver-profile">
+                                    <div class="avatar">M</div>
+                                    <div>
+                                        <p style="font-size: 0.85rem; font-weight:600;">Driver Workspace</p>
+                                        <p style="font-size: 0.7rem; color:var(--primary);"><i class="fa-solid fa-star"></i> 5.0 • Active</p>
+                                    </div>
+                                </div>
+                                <div class="online-toggle" id="toggleSwitch" onclick="toggleOnlineStatus()"></div>
+                            </div>
+                            <div class="map-area">
+                                <div class="map-bg"></div>
+                                <div id="statusPulse" style="z-index:2; font-size:0.9rem; background:rgba(0,0,0,0.8); padding:8px 16px; border-radius:30px; border:1px solid var(--primary);"><i class="fa-solid fa-satellite-dish" class="fa-spin"></i> Awaiting trip assignments...</div>
+                                <div class="stats-floating-box">
+                                    <div class="stat-box"><h4>$284.60</h4><span>Balance</span></div>
+                                    <div class="stat-box"><h4>31</h4><span>Trips</span></div>
+                                    <div class="stat-box"><h4>100%</h4><span>Accept Rate</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Security Verification Pipeline -->
+        <section class="alt-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Comprehensive Driver Guardrails</h2>
+                    <p>Comprehensive checks ensuring strict structural authenticity across onboarding parameters and documents validation steps.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                        <h3>OTP Credential Guards</h3>
+                        <p>Mandatory two-factor SMS lookups via configured providers secure account creation sequences against fraudulent sign-ups.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-file-shield"></i></div>
+                        <h3>Verification Frameworks</h3>
+                        <p>State panels allow manual deep validation audits for driver license documentation buffers prior to entering production dispatch channels.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-ban"></i></div>
+                        <h3>Dynamic Blocking Safety</h3>
+                        <p>Automated rate-limiting parameters flag anomalies, blocking misbehaving nodes from manipulating network state matrices.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Performance Tracking Grid -->
+        <section class="container">
+            <div class="grid-2">
+                <div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 15px;">Advanced Earnings Dashboards</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Drivers retain absolute visibility over their structural shifts, tracking historical payments, tip adjustments, and commission fractions on a responsive calendar architecture.</p>
+                    <div style="background: var(--bg-card); padding: 20px; border: 1px solid var(--border); border-radius: 12px;">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Recent Transaction Reference</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <div>
+                                <p style="font-weight: 600;">Ride #CG000847</p>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Jan 20 • 3:30 PM</p>
+                            </div>
+                            <span style="color: var(--success); font-weight: 700;">+$14.80</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: var(--bg-card); padding: 30px; border: 1px solid var(--border); border-radius: 16px;">
+                    <h4 style="margin-bottom: 15px;"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> In-Ride Tipping Matrix Added</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">Our code architecture provides deep infrastructure enhancements: post-trip tipping options transfer 100% of custom client additions cleanly over to the driver account balance without applying basic platform commission deduction splits.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= PAGE 3: ADMIN TERMINAL ================= -->
+    <div id="page-admin" class="view-page">
+        <!-- Section 1: Live Workspace Preview Frame -->
+        <section class="container">
+            <div class="section-header">
+                <h2>Central Platform Terminal</h2>
+                <p>Govern systemic configurations, analyze incoming ledger distributions, and adjust baseline operating values across all node networks.</p>
+            </div>
+            <div class="admin-layout">
+                <div class="admin-sidebar">
+                    <div style="font-weight: 700; color: #fff; font-size: 1.1rem; padding: 10px 15px;">Admin Panel</div>
+                    <ul class="sidebar-menu">
+                        <li class="active"><i class="fa-solid fa-chart-pie"></i> Operations Center</li>
+                        <li><i class="fa-solid fa-car"></i> Document Verification</li>
+                        <li><i class="fa-solid fa-route"></i> Live Dispatches</li>
+                        <li><i class="fa-solid fa-wallet"></i> Payout Processing</li>
+                    </ul>
+                </div>
+                <div class="admin-main">
+                    <div class="admin-metrics">
+                        <div class="metric-card"><span>Total Network Users</span><h3>24,810</h3></div>
+                        <div class="metric-card"><span>Active Field Nodes</span><h3 style="color: var(--success);">1,402</h3></div>
+                        <div class="metric-card"><span>Ecosystem Revenue (7d)</span><h3>$12,410.80</h3></div>
+                        <div class="metric-card"><span>System Commission</span><h3 style="color: var(--primary);">20%</h3></div>
+                    </div>
+                    <div style="margin-bottom: 15px; font-weight:600; font-size:1.1rem;">Ecosystem Network Load Distribution (Realtime)</div>
+                    <div class="revenue-graph-mock">
+                        <div style="text-align: center;">
+                            <i class="fa-solid fa-chart-line" style="font-size:2rem; margin-bottom:10px; color: var(--primary);"></i>
+                            <p style="font-size:0.85rem;">Continuous status validation pipelines functional.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Global Configuration Multi-City Controls -->
+        <section class="alt-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Multi-City Operational Control Panels</h2>
+                    <p>Calibrate systemic constants, change pricing values, and adjust platform restrictions easily across regions dynamically.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                        <h3>Localized Currency Matrices</h3>
+                        <p>Set independent region properties assigning target symbols, base language variables, and isolated pricing models dynamically inside the workspace database arrays.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-percent"></i></div>
+                        <h3>Adaptive Fee Toggles</h3>
+                        <p>Override general commission splits locally for targeted city boundaries to drive adoption metrics or run regional campaign activities effortlessly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <h3>Surge Multipliers</h3>
+                        <p>Automated algorithms measure requests ratios against nearby asset availability density, setting dynamic multiplier parameters to rebalance ecosystem loads.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Deep Technical Source Verification Code Fixes -->
+        <section class="container">
+            <div class="section-header">
+                <h2>Ecosystem Review & Verification Audits</h2>
+                <p>Summary of recently finalized codebase adjustments ensuring structural authenticity and protecting backend instances against validation exploits.</p>
+            </div>
+            <div class="grid-2" style="align-items: stretch;">
+                <div class="feature-card">
+                    <h5 style="color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-circle-nodes"></i> Overwrite Flaws Rectified</h5>
+                    <p>Reconfigured transaction processing calls to strictly rely on validated webhook payloads returned directly from verified gateways, blocking unsafe client-supplied request properties from fabricating fake system credit balances.</p>
+                </div>
+                <div class="feature-card">
+                    <h5 style="color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> Concurrent Collision Patches</h5>
+                    <p>Integrated atomic processing rules for dispatch operations, preventing database record race-conditions from allowing multiple field instances to accept single trip entries concurrently.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Enterprise Licensing Plans -->
+        <section class="alt-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Acquisition & Source Licensing</h2>
+                    <p>Acquire standard distribution frameworks with unrestricted access rights to native assets and backend pipelines completely.</p>
+                </div>
+                <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+                    <div class="pricing-tier">
+                        <h4>Starter Bundle</h4>
+                        <div class="pricing-price">$49</div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Perfect for prototyping deployment loops.</p>
+                        <ul class="pricing-features">
+                            <li><i class="fa-solid fa-check"></i> Standard API Backend Components</li>
+                            <li><i class="fa-solid fa-check"></i> Admin Web Dashboard Layouts</li>
+                            <li><i class="fa-solid fa-check"></i> Local Database Seed Files</li>
+                        </ul>
+                        <button class="nav-btn" style="width: 100%;" onclick="switchView('home')">Get Framework Access</button>
+                    </div>
+                    <div class="pricing-tier featured">
+                        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #000; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase;">Recommended</div>
+                        <h4>Complete Full Stack Suite</h4>
+                        <div class="pricing-price">$149</div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Complete access matrix for production setups.</p>
+                        <ul class="pricing-features">
+                            <li><i class="fa-solid fa-check"></i> Unrestricted Native Source Code Access</li>
+                            <li><i class="fa-solid fa-check"></i> Expo Cross-Platform Applications</li>
+                            <li><i class="fa-solid fa-check"></i> Containerized Docker Deployment Trees</li>
+                            <li><i class="fa-solid fa-check"></i> Complete API Endpoint Definitions</li>
+                        </ul>
+                        <button class="nav-btn" style="width: 100%;" onclick="switchView('home')">Acquire Complete Stack</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 CarryGO Platform. Enterprise White-Label Mobility Systems Architecture.</p>
+    </footer>
+
+    <script>
+        function switchView(viewId) {
+            document.querySelectorAll('.view-page').forEach(page => { page.classList.remove('active'); });
+            document.querySelectorAll('.nav-links a').forEach(link => { link.classList.remove('active'); });
+            const targetPage = document.getElementById(`page-${viewId}`);
+            const targetLink = document.getElementById(`link-${viewId}`);
+            if(targetPage) targetPage.classList.add('active');
+            if(targetLink) targetLink.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        let isOnline = true;
+        function toggleOnlineStatus() {
+            const toggle = document.getElementById('toggleSwitch');
+            const pulse = document.getElementById('statusPulse');
+            if(isOnline) {
+                toggle.style.background = '#3A3A4A';
+                pulse.innerHTML = '<i class="fa-solid fa-moon"></i> Operational state: offline.';
+                pulse.style.borderColor = 'rgba(255,255,255,0.1)';
+                isOnline = false;
+            } else {
+                toggle.style.background = 'var(--primary)';
+                pulse.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Awaiting trip assignments...';
+                pulse.style.borderColor = 'var(--primary)';
+                isOnline = true;
+            }
+        }
+    </script>
+</body>
+</html>
